@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/welcomePage.dart';
+import 'package:tirbuschon_feng497/Review/reviewVenuePage.dart';
+import 'package:tirbuschon_feng497/Review/reviewPersonnel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const WelcomePage(),
+      home: const ReviewVenuePage(),
     );
   }
 }
