@@ -21,8 +21,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+<<<<<<< Updated upstream
       home: const ReviewVenuePage(),
       // WelcomePage(),
+=======
+      home: const WelcomePage(),
+>>>>>>> Stashed changes
     );
   }
 }
