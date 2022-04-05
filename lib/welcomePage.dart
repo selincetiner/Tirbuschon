@@ -1,7 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:flutter/services.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
+import 'Auth/FirebaseService.dart';
 import 'Core/mainPage.dart';
 
 class WelcomePage extends StatefulWidget {
@@ -13,6 +19,11 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
@@ -22,6 +33,7 @@ class _WelcomePageState extends State<WelcomePage> {
             alignment: Alignment.center,
             child: Column(
               children: const [
+                SizedBox(height: 50),
                 Text(
                   "Welcome",
                   style: TextStyle(
@@ -44,6 +56,7 @@ class _WelcomePageState extends State<WelcomePage> {
             padding: EdgeInsets.all(15.0),
             child: Text(
               "Making reservations with Tirbuschon is easy peasy!",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 20,
@@ -54,7 +67,7 @@ class _WelcomePageState extends State<WelcomePage> {
             children: [
               Container(
                 height: 50,
-                width: MediaQuery.of(context).size.width - 20,
+                width: MediaQuery.of(context).size.width - 50,
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -74,16 +87,15 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.blue,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(width: 1),
+                  borderRadius: BorderRadius.circular(45),
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 50,
               ),
               Container(
                 height: 50,
-                width: MediaQuery.of(context).size.width - 20,
+                width: MediaQuery.of(context).size.width - 50,
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -103,71 +115,47 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.green,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(width: 1),
+                  borderRadius: BorderRadius.circular(45),
                 ),
               ),
               const SizedBox(
                 height: 10,
               ),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    child: Expanded(
-                      child: Container(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainPage()),
-                            );
-                          },
-                          child: const Text(
-                            "Sign in with Google",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(width: 1),
-                        ),
-                      ),
-                    ),
-                  ),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                      child: Expanded(
+                          child: Container(
+                              child: SignInButton(Buttons.Google,
+                                  text: "Sign up with Google",
+                                  onPressed: () async {
+                        try {
+                          await signInwithGoogle();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainPage()),
+                          );
+                        } catch (e) {
+                          if (e is FirebaseAuthException) {
+                            showMessage(e.message!);
+                          }
+                          ;
+                        }
+                      })))),
                   const SizedBox(width: 5),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Expanded(
                       child: Container(
-                        child: TextButton(
+                        child: SignInButton(
+                          Buttons.Facebook,
+                          text: "Sign up with Facebook",
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainPage()),
-                            );
+                            // signInWithFacebook();
                           },
-                          child: const Text(
-                            "Sign In with Facebook",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(width: 1),
                         ),
                       ),
                     ),
@@ -179,5 +167,49 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       ),
     );
+  }
+
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  static Future<String?> signInwithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      throw e;
+    }
+  }
+
+  Future<void> signOutFromGoogle() async {
+    await _googleSignIn.signOut();
+    await _auth.signOut();
+  }
+
+  void showMessage(String message) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text(message),
+            actions: [
+              TextButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
   }
 }
