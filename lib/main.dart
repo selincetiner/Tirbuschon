@@ -41,9 +41,17 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+<<<<<<< HEAD
 
       home: const WelcomePage(),
+=======
+<<<<<<< Updated upstream
+      home: const ReviewVenuePage(),
+>>>>>>> a08d6d653f7a9e96ef40f40bdae495519d753df5
       // WelcomePage(),
+=======
+      home: const WelcomePage(),
+>>>>>>> Stashed changes
     );
   }
 }
