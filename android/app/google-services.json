@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "359283269841",
+    "project_id": "tirbuschon-adad2",
+    "storage_bucket": "tirbuschon-adad2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359283269841:android:a3cb8f99e970c7e2d9a5f0",
+        "android_client_info": {
+          "package_name": "com.example.tirbuschon_feng497"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359283269841-espc3jkfbi0qrdhvs8pecmtijqfc4u52.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl2n7xrrR20B05MvD7AfTfcTllELqMMHg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359283269841-espc3jkfbi0qrdhvs8pecmtijqfc4u52.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
