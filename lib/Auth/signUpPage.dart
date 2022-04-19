@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Core/mainPage.dart';
+import '../services/authService.dart';
 import 'loginPage.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -10,6 +11,13 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final AuthService _authService = AuthService();
+  final _formKey = GlobalKey<FormState>();
+
+  String dropdownValue = 'Customer';
+  late String fullName, username, email, password, phoneNumber;
+  var roles = ['Customer', 'Venue Owner'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,67 +25,153 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text("Sign Up"),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          Center(
-            child: Text(
+      body: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
               "Tirbuschon",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 42,
+                fontSize: 30,
                 color: Colors.blue[400],
                 fontStyle: FontStyle.italic,
               ),
             ),
-          ),
-          SingleChildScrollView(
-            child: Column(
+            Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.person),
-                      labelText: "Name",
-                      hintText: "Please enter your name",
+                      labelText: "Full Name",
+                      hintText: "Please enter your full name",
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Full name field can not be empty!";
+                      } else if (value.trim().length < 4) {
+                        return "Full name should be at least 4 characters.";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      fullName = value.toString();
+                    },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline),
+                      labelText: "Username",
+                      hintText: "Please enter your username",
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Username field can not be empty!";
+                      } else if (value.trim().length < 4 ||
+                          value.trim().length > 10) {
+                        return "Username can be at least 4 and most 10 chars.";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      username = value.toString();
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.mail),
                       labelText: "Email",
                       hintText: "Please enter your email",
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Email field can not be empty!";
+                      } else if (!value.contains("@")) {
+                        return "Value should be an email format.";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      email = value.toString();
+                    },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TextField(
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.lock),
                       labelText: "Password",
                       hintText: "Please enter your password",
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Password field can not be empty!";
+                      } else if (value.trim().length < 4) {
+                        return "Password can not be less then 4 chars.";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      password = value.toString();
+                    },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.phone),
                       labelText: "Phone number",
                       hintText: "Please enter your mobile phone number",
                     ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Phone number field can not be empty!";
+                      } else if (value.trim().length < 4) {
+                        return "Phone number should be at least 4 chars without country code.";
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      phoneNumber = value.toString();
+                    },
                   ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: DropdownButtonFormField(
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(10.0),
+                          labelText: 'Select your user type',
+                          labelStyle: TextStyle(fontSize: 20)),
+                      value: dropdownValue,
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      items: roles.map((String roles) {
+                        return DropdownMenuItem(
+                          value: roles,
+                          child: Text(roles),
+                        );
+                      }).toList(),
+                      onChanged: (String? selectedValue) {
+                        setState(() {
+                          dropdownValue = selectedValue!;
+                        });
+                      },
+                    )),
                 const SizedBox(
                   height: 10,
                 ),
@@ -91,11 +185,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   child: TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MainPage()),
-                      );
+                      _createUser();
                     },
                     child: const Text(
                       "Sign Up",
@@ -108,18 +198,39 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ],
             ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
-            },
-            child: const Text("Do you have your account?"),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+              child: const Text("Do you have your account?"),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void _createUser() async {
+    var _formState = _formKey.currentState;
+    if (_formState!.validate()) {
+      _formState.save();
+
+      await _authService
+          .createUser(
+              fullName, username, email, password, phoneNumber, dropdownValue)
+          .then((value) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage()),
+            (route) => false);
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(error.toString()),
+        ));
+      });
+    }
   }
 }

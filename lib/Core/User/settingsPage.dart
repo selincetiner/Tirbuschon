@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Auth/signUpPage.dart';
 import 'package:tirbuschon_feng497/Core/User/profileSettingsPage.dart';
+import 'package:tirbuschon_feng497/welcomePage.dart';
+import '../../services/authService.dart';
 import 'policyPage.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -90,7 +93,9 @@ class _SettingsPageState extends State<SettingsPage> {
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _logOut();
+                  },
                   child: const Text("Log Out",
                       style: TextStyle(color: Colors.white, fontSize: 20))),
             ),
@@ -98,5 +103,16 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       )),
     );
+  }
+
+  void _logOut() {
+    final AuthService _authService = AuthService();
+
+    _authService.signOut().then((value) {
+      return Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WelcomePage()),
+          (route) => false);
+    });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/services/authService.dart';
 
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
@@ -119,11 +120,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       child: Container(
                         child: TextButton(
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainPage()),
-                            );
+                            _loginWithGoogle();
                           },
                           child: const Text(
                             "Sign in with Google",
@@ -179,5 +176,15 @@ class _WelcomePageState extends State<WelcomePage> {
         ],
       ),
     );
+  }
+
+  void _loginWithGoogle() {
+    final AuthService _authService = AuthService();
+    _authService.signInWithGoogle().then((value) {
+      return Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+          (route) => false);
+    });
   }
 }
